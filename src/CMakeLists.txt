@@ -5,6 +5,7 @@ add_executable(cmaketest1
         IO/FileWriter.cpp
         Image/Image.cpp
         Image/Pixel.cpp
+        Filters/Filters.cpp
 )
 target_include_directories(cmaketest1 PRIVATE .)
 target_include_directories(cmaketest1 PUBLIC ../include)

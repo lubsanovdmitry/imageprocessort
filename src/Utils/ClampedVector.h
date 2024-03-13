@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstddef>
 
+#include <cstdint>
 #include <utility>
 #include <vector>
 
@@ -24,7 +25,7 @@ public:
     ClampedVector(const ClampedVector& other) : vector_(other.vector_) {
     }
 
-    ClampedVector(const ClampedVector&& other) noexcept : vector_(std::move(other.vector_)) {
+    ClampedVector(ClampedVector&& other) noexcept : vector_(std::move(other.vector_)) {
     }
 
     ClampedVector& operator=(const ClampedVector& other) {
@@ -32,17 +33,17 @@ public:
         return *this;
     }
 
-    ClampedVector& operator=(const ClampedVector&& other) noexcept {
-        std::swap(vector_, other.vector_);
+    ClampedVector& operator=(ClampedVector&& other) noexcept {
+        Swap(other);
         return *this;
     }
 
-    const T& operator[](size_t i) const {
-        return vector_[std::clamp(i, 0ul, vector_.size() - 1)];
+    const T& operator[](int64_t i) const {
+        return vector_[std::clamp(i, 0l, static_cast<int64_t>(vector_.size() - 1))];
     }
 
-    T& operator[](size_t i) {
-        return vector_[std::clamp(i, 0ul, vector_.size() - 1)];
+    T& operator[](int64_t i) {
+        return vector_[std::clamp(i, 0l, static_cast<int64_t>(vector_.size() - 1))];
     }
 
     size_t Size() const noexcept {
@@ -93,6 +94,10 @@ public:
         return vector_.insert(it, std::move(value));
     }
 
+    constexpr Iterator Insert(ConstIterator it, size_t count, const T& value) {
+        return vector_.insert(it, count, value);
+    }
+
     template <class InputIt>
     constexpr Iterator Insert(ConstIterator it, InputIt first, InputIt last) {
         return vector_.insert(it, first, last);
@@ -101,6 +106,14 @@ public:
     template <class... Args>
     constexpr Iterator Emplace(ConstIterator it, Args&&... args) {
         return Insert(it, T(std::forward<Args>(args)...));
+    }
+
+    constexpr Iterator Erase(ConstIterator it) {
+        return vector_.erase(it);
+    }
+
+    constexpr Iterator Erase(ConstIterator first, ConstIterator last) {
+        return vector_.erase(first, last);
     }
 
     constexpr void PushBack(const T& value) {
@@ -126,6 +139,10 @@ public:
 
     void Resize(size_t new_size, const T& value) {
         vector_.resize(new_size, value);
+    }
+
+    constexpr void Swap(ClampedVector& other) {
+        std::swap(vector_, other.vector_);
     }
 
 private:
