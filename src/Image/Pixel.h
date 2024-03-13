@@ -1,6 +1,6 @@
 #pragma once
 
-namespace image {
+namespace image_processor {
 
 struct Pixel {
     double blue = 0.0;
@@ -15,4 +15,4 @@ Pixel operator*(const Pixel& c, double a);
 Pixel operator*(double a, const Pixel& c);
 Pixel operator/(const Pixel& c, double a);
 
-}  // namespace image
+}  // namespace image_processor

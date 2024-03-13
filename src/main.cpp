@@ -1,10 +1,11 @@
-#include "ImageHandler/ImageHandler.h"
-
 #include <iostream>
+#include <vector>
+
+#include "Utils/ClampedVector.h"
+#include "Image/Pixel.h"
 
 int main(int argc, char** argv) {
-    ImageHandler image;
-    image.Read("flag.bmp");
-    std::cout << "kek" << std::endl;
+    using Vec = image_processor::ClampedVector<int>;
+    Vec v;
     return 0;
 }

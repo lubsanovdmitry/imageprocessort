@@ -1,6 +1,6 @@
 #include "Image/Pixel.h"
 
-namespace image {
+namespace image_processor {
 
 Pixel operator+(const Pixel& a, const Pixel& b) {
     Pixel p{};
@@ -49,4 +49,4 @@ Pixel operator/(const Pixel& c, double a) {
     return p;
 }
 
-}  // namespace image
+}  // namespace image_processor

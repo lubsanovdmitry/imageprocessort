@@ -2,8 +2,10 @@
 
 #include <cstdint>
 #include <filesystem>
-#include <vector>
+#include "Image/Image.h"
+#include "ImageFormats/ImageFormat.h"
 
+namespace image_processor {
 namespace bmp_default_values {
 constexpr size_t BMPHeaderSize = 14;
 constexpr size_t DIBHeaderSize = 40;
@@ -11,12 +13,6 @@ constexpr uint32_t DefaultOffset = 54;
 constexpr uint32_t DefaultBPP = 24;
 constexpr uint32_t DIBSize = 40;
 }  // namespace bmp_default_values
-
-struct RawPixel {
-    uint8_t red{};
-    uint8_t green{};
-    uint8_t blue{};
-};
 
 struct BMPHeader {
     uint8_t B{'B'};
@@ -41,18 +37,10 @@ struct DIBHeader {
     uint32_t important_colors{0};
 };
 
-class BMP {
+class BMP : public IImageFormat {
 public:
-    BMP() {
-    }
-
-    void Read(std::filesystem::path path);
-
-    void Write(std::filesystem::path path);
-
-private:
-    BMPHeader bmp_header_{};
-    DIBHeader dib_header_{};
-    std::vector<std::vector<RawPixel>> image_{};
-    int32_t padding_{};
+    image_processor::Image Read(std::filesystem::path path) override;
+    void Write(const image_processor::Image& image, std::filesystem::path path) override;
 };
+
+}  // namespace image_processor
