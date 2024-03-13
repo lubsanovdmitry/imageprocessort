@@ -125,7 +125,7 @@ public:
     }
 
     void Resize(size_t new_size, const T& value) {
-        vector_.resize(new_size, T());
+        vector_.resize(new_size, value);
     }
 
 private:

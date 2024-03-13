@@ -1,6 +1,5 @@
 #include "ImageFormats/BMP.h"
 
-#include <concepts>
 #include <cstdint>
 #include <limits>
 
