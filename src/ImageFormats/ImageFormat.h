@@ -11,8 +11,12 @@ public:
     IImageFormat() = default;
     virtual ~IImageFormat() = default;
 
-    virtual image_processor::Image Read(std::filesystem::path path);
-    virtual void Write(const image_processor::Image& image, std::filesystem::path path);
+    virtual image_processor::Image Read(std::filesystem::path path) {
+        return {};
+    }
+
+    virtual void Write(const image_processor::Image& image, std::filesystem::path path) {
+    }
 };
 
 }  // namespace image_processor

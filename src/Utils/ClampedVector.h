@@ -2,30 +2,40 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <type_traits>
+
 #include <utility>
 #include <vector>
 
 namespace image_processor {
 
-template <typename T>
+template <class T>
 class ClampedVector {
 public:
     ClampedVector() = default;
 
+    ~ClampedVector() = default;
+
     explicit ClampedVector(size_t size) : vector_(size, T()) {
     }
 
-    ClampedVector(size_t size, const T& value) : vector_(size, T()) {
+    ClampedVector(size_t size, const T& value) : vector_(size, value) {
     }
 
-    ClampedVector(const ClampedVector& other) = default;
+    ClampedVector(const ClampedVector& other) : vector_(other.vector_) {
+    }
 
-    ClampedVector(const ClampedVector&& other) noexcept = default;
+    ClampedVector(const ClampedVector&& other) noexcept : vector_(std::move(other.vector_)) {
+    }
 
-    ClampedVector& operator=(const ClampedVector& other) = default;
+    ClampedVector& operator=(const ClampedVector& other) {
+        vector_ = other.vector_;
+        return *this;
+    }
 
-    ClampedVector& operator=(const ClampedVector&& other) noexcept = default;
+    ClampedVector& operator=(const ClampedVector&& other) noexcept {
+        std::swap(vector_, other.vector_);
+        return *this;
+    }
 
     const T& operator[](size_t i) const {
         return vector_[std::clamp(i, 0ul, vector_.size() - 1)];
