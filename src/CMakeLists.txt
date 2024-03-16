@@ -6,8 +6,9 @@ add_executable(cmaketest1
         Image/Image.cpp
         Image/Pixel.cpp
         Filters/Filters.cpp
+        FilterController/FilterController.cpp
+        CLI/CommandLineArgs.cpp
 )
 target_include_directories(cmaketest1 PRIVATE .)
-target_include_directories(cmaketest1 PUBLIC ../include)
 target_compile_features(cmaketest1 PRIVATE cxx_std_20)
 set_target_properties(cmaketest1 PROPERTIES CXX_EXTENSIONS OFF)

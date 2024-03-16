@@ -16,7 +16,7 @@ TEST_CASE("Clamped Vector works") {
 
     cv.Erase(cv.begin());
 
-    REQUIRE(cv.Size() == 1 && cv[0] == 2);
+    REQUIRE((cv.Size() == 1 && cv[0] == 2));
 
     cv.Clear();
 }
