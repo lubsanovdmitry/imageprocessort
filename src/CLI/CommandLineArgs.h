@@ -2,7 +2,6 @@
 
 #include <filesystem>
 #include <sstream>
-#include <stdexcept>
 
 #include "FilterController/FilterController.h"
 

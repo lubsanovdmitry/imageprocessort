@@ -108,8 +108,8 @@ Image Gaussian::Apply(const Image& image) {
     for (int64_t i = 0; i < image.Size(); ++i) {
         for (int64_t j = 0; j < image[0].Size(); ++j) {
             // std::cerr << i << ' ' << j << ' ';
-            for (int64_t x = 0; x < image.Size(); ++x) {
-                for (int64_t y = 0; y < image[0].Size(); ++y) {
+            for (int64_t x = i - 3; x < i + 3; ++x) {
+                for (int64_t y = j - 3; y < j + 3; ++y) {
                     double distx = static_cast<double>(std::abs(i - x));
                     double disty = static_cast<double>(std::abs(j - y));
                     double normdist = (distx * distx + disty * disty) / (2 * sigma_ * sigma_);

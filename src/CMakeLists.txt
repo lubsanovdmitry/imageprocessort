@@ -1,4 +1,4 @@
-add_executable(cmaketest1
+target_sources(image_processor PRIVATE
         main.cpp
         ImageFormats/BMP.cpp
         IO/FileReader.cpp
@@ -9,6 +9,5 @@ add_executable(cmaketest1
         FilterController/FilterController.cpp
         CLI/CommandLineArgs.cpp
 )
-target_include_directories(cmaketest1 PRIVATE .)
-target_compile_features(cmaketest1 PRIVATE cxx_std_20)
-set_target_properties(cmaketest1 PROPERTIES CXX_EXTENSIONS OFF)
+target_include_directories(image_processor PRIVATE .)
+target_compile_features(image_processor PRIVATE cxx_std_20)

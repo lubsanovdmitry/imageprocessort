@@ -18,5 +18,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Catch2)
 
+add_executable(image_processor)
+
 add_subdirectory(src)
 add_subdirectory(tests)
