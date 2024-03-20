@@ -12,24 +12,24 @@ namespace image_processor::filters {
 
 class Crop : public BaseFilter {
 public:
-    Crop() : new_height_(0), new_width_(0) {
+    Crop() : new_width_(0), new_height_(0) {
     }
 
-    Crop(size_t new_height, size_t new_width) : new_height_(new_height), new_width_(new_width) {
+    Crop(size_t new_width, size_t new_height) : new_width_(new_width), new_height_(new_height) {
     }
 
     Image Apply(const Image& image) override;
 
 private:
-    size_t new_height_;
     size_t new_width_;
+    size_t new_height_;
 };
 
 struct CropFactory : public BaseFilterFactory {
     std::unique_ptr<BaseFilter> operator()(std::stringstream& argsstream) const override {
-        int new_height = image_processor::command_line::Read<int>(argsstream);
         int new_width = image_processor::command_line::Read<int>(argsstream);
-        return std::make_unique<Crop>(new_height, new_width);
+        int new_height = image_processor::command_line::Read<int>(argsstream);
+        return std::make_unique<Crop>(new_width, new_height);
     }
 };
 

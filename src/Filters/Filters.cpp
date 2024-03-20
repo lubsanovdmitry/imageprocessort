@@ -14,13 +14,23 @@ namespace image_processor::filters {
 
 Image BaseConvolutionFilter::ApplyMatrix(const Image& image, const ConvolutionMatrix& cm) {
     Image new_image(image.Size(), Row(image[0].Size()));
+    // static_assert(cm.size() % 2 == 1, "a");
+    // Image new_image = image;
+    int64_t mid_x = static_cast<int64_t>(cm.size()) / 2;
+    int64_t mid_y = static_cast<int64_t>(cm[0].size()) / 2;
 
+    int64_t min_x = -mid_x;
+    int64_t min_y = -mid_y;
+    int64_t max_x = mid_x;
+    int64_t max_y = mid_y;
     for (int64_t i = 0; i < static_cast<int64_t>(image.Size()); ++i) {
         for (int64_t j = 0; j < static_cast<int64_t>(image[i].Size()); ++j) {
-            for (const Index& idx : IndexArray) {
-                new_image[i][j].blue += cm[idx.x + 1][idx.y + 1] * image[i + idx.x][j + idx.y].blue;
-                new_image[i][j].green += cm[idx.x + 1][idx.y + 1] * image[i + idx.x][j + idx.y].green;
-                new_image[i][j].red += cm[idx.x + 1][idx.y + 1] * image[i + idx.x][j + idx.y].red;
+            for (int64_t x = min_x; x <= max_x; ++x) {
+                for (int64_t y = min_y; y <= max_y; ++y) {
+                    new_image[i][j].blue += cm[x + mid_x][y + mid_y] * image[i + x][j + y].blue;
+                    new_image[i][j].green += cm[x + mid_x][y + mid_y] * image[i + x][j + y].green;
+                    new_image[i][j].red += cm[x + mid_x][y + mid_y] * image[i + x][j + y].red;
+                }
             }
             new_image[i][j].blue = std::clamp(new_image[i][j].blue, 0.0, 1.0);
             new_image[i][j].green = std::clamp(new_image[i][j].green, 0.0, 1.0);
@@ -34,12 +44,12 @@ Image BaseConvolutionFilter::ApplyMatrix(const Image& image, const ConvolutionMa
 Image Crop::Apply(const Image& image) {
     Image new_image = image;
 
-    if (new_height_ > image.Size()) {
-        new_height_ = image.Size();
+    if (new_width_ > image.Size()) {
+        new_width_ = image.Size();
     }
 
-    if (!new_image.Empty() && new_image[0].Size() < new_width_) {
-        new_width_ = new_image[0].Size();
+    if (!new_image.Empty() && new_image[0].Size() < new_height_) {
+        new_height_ = new_image[0].Size();
     }
 
     for (Row& r : new_image) {
@@ -91,7 +101,7 @@ Image EdgeDetection::Apply(const Image& image) {
 
     for (Row& r : new_image) {
         for (Pixel& p : r) {
-            if (p.blue > threshold_) {
+            if (p.blue >= threshold_) {
                 p = {1, 1, 1};
             } else {
                 p = {0, 0, 0};
@@ -108,6 +118,7 @@ Image Gaussian::Apply(const Image& image) {
     for (int64_t i = 0; i < image.Size(); ++i) {
         for (int64_t j = 0; j < image[0].Size(); ++j) {
             // std::cerr << i << ' ' << j << ' ';
+            double sum = 0.0;
             for (int64_t x = i - 3; x < i + 3; ++x) {
                 for (int64_t y = j - 3; y < j + 3; ++y) {
                     double distx = static_cast<double>(std::abs(i - x));
@@ -115,11 +126,13 @@ Image Gaussian::Apply(const Image& image) {
                     double normdist = (distx * distx + disty * disty) / (2 * sigma_ * sigma_);
                     double expon = std::exp(-normdist);
                     double coeff = expon / (2 * std::numbers::pi * sigma_ * sigma_);
+                    sum += coeff;
                     new_image[i][j].blue += coeff * image[x][y].blue;
                     new_image[i][j].green += coeff * image[x][y].green;
                     new_image[i][j].red += coeff * image[x][y].red;
                 }
             }
+            new_image[i][j] = new_image[i][j] / sum;
             new_image[i][j].blue = std::clamp(new_image[i][j].blue, 0.0, 1.0);
             new_image[i][j].green = std::clamp(new_image[i][j].green, 0.0, 1.0);
             new_image[i][j].red = std::clamp(new_image[i][j].red, 0.0, 1.0);

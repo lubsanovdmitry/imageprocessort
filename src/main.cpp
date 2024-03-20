@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <iostream>
+#include <memory>
 #include <ostream>
 
 #include <catch2/catch_all.hpp>
@@ -8,6 +9,7 @@
 #include "Image/Image.h"
 #include "ImageFormats/BMP.h"
 #include "CLI/CommandLineArgs.h"
+#include "ImageFormats/ImageFormat.h"
 
 int main(int argc, char* argv[]) {
     image_processor::command_line::ArgsStream args_stream =
@@ -31,13 +33,17 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    image_processor::BMP bmp;
+    std::unique_ptr<image_processor::IImageFormat> format = std::make_unique<image_processor::BMP>();
 
-    image_processor::Image image = bmp.Read(file_names.source);
+    image_processor::Image image = format->Read(file_names.source);
 
     image = controller.Apply(image);
 
-    bmp.Write(image, file_names.dest);
+    std::cerr << "\033[1;31m " << file_names.source.string() << "\033[0m" << std::endl;
+
+    std::cerr << "\033[1;31m " << file_names.dest.string() << "\033[0m" << std::endl;
+
+    format->Write(image, file_names.dest);
 
     return 0;
 }

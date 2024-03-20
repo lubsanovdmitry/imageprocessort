@@ -101,7 +101,7 @@ void BMP::Write(const image_processor::Image &image, std::filesystem::path path)
 
     dib_header.height = static_cast<int32_t>(image.Size());
     dib_header.width = (!image.Empty()) ? static_cast<int32_t>(image[0].Size()) : 0;
-    int64_t padding = (4 - (dib_header.width % 4)) % 4;
+    int64_t padding = (4 - (dib_header.width * 3 % 4)) % 4;
 
     dib_header.bitmap_size = (dib_header.width * 3 + padding) * dib_header.height;
     bmp_header.file_size = dib_header.bitmap_size + bmp_default_values::DefaultOffset;
