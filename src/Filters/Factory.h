@@ -15,10 +15,18 @@ public:
     using FilterFactory = std::function<std::unique_ptr<BaseFilter>(std::stringstream&)>;
     using RegistryMap = std::unordered_map<std::string, FilterFactory>;
 
+public:
     static RegistryMap& GetRegistry() {
         static RegistryMap registry;
         return registry;
     }
+
+private:
+    Registry() = default;
+
+    Registry(Registry&) = delete;
+
+    Registry& operator=(Registry&) = delete;
 };
 
 template <typename T>

@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <stdexcept>
 #include <vector>
 
 #include "IO/FileReader.h"
@@ -10,7 +11,7 @@
 #include "Image/Pixel.h"
 #include "Utils/ClampedVector.h"
 
-namespace image_processor {
+namespace image_processor::formats {
 
 namespace {
 
@@ -31,8 +32,6 @@ T Denormalize(double d) {
 }
 
 namespace bmp_default_values {
-constexpr size_t BMPHeaderSize = 14;
-constexpr size_t DIBHeaderSize = 40;
 constexpr uint32_t DefaultOffset = 54;
 constexpr uint32_t DefaultBPP = 24;
 constexpr uint32_t DIBSize = 40;
@@ -63,20 +62,28 @@ struct DIBHeader {
 
 }  // namespace
 
-image_processor::Image BMP::Read(std::filesystem::path path) {
+image_processor::Image BMP24::Read(std::filesystem::path path) {
     io::FileReader reader(path);
     BMPHeader bmp_header{};
     DIBHeader dib_header{};
     reader >> bmp_header.B >> bmp_header.M >> bmp_header.file_size >> bmp_header.res1 >> bmp_header.res2 >>
         bmp_header.offset;
+
+    if (bmp_header.B != 'B' || bmp_header.M != 'M' || bmp_header.offset != bmp_default_values::DefaultOffset) {
+        throw std::runtime_error{"Wrong file format"};
+    } else if (bmp_header.file_size < bmp_default_values::DefaultOffset) {
+        throw std::runtime_error{"Corrupted file"};
+    }
+
     reader >> dib_header.dib_size >> dib_header.width >> dib_header.height >> dib_header.planes >>
         dib_header.bits_per_pixel >> dib_header.compression >> dib_header.bitmap_size >>
         dib_header.horizontal_resolution >> dib_header.vertical_resolution >> dib_header.colors_in_palette >>
         dib_header.important_colors;
+
     Image image(dib_header.height, image_processor::Row(dib_header.width));
-    int64_t padding = (4 - (dib_header.width % 4)) % 4;
+    int64_t padding = (4 - (dib_header.width * 3 % 4)) % 4;
     std::vector<char> pad(padding);
-    for (int64_t i = 0; i < dib_header.height; ++i) {
+    for (int64_t i = dib_header.height - 1; i >= 0; --i) {
         for (int64_t j = 0; j < dib_header.width; ++j) {
             RawPixel raw_pixel{};
             reader >> raw_pixel;
@@ -94,7 +101,7 @@ image_processor::Image BMP::Read(std::filesystem::path path) {
     return image;
 }
 
-void BMP::Write(const image_processor::Image &image, std::filesystem::path path) {
+void BMP24::Write(const image_processor::Image &image, std::filesystem::path path) {
     io::FileWriter writer(path);
     BMPHeader bmp_header{};
     DIBHeader dib_header{};
@@ -114,7 +121,7 @@ void BMP::Write(const image_processor::Image &image, std::filesystem::path path)
            << dib_header.important_colors;
 
     std::vector<char> pad(padding);
-    for (int64_t i = 0; i < dib_header.height; ++i) {
+    for (int64_t i = dib_header.height - 1; i >= 0; --i) {
         for (int64_t j = 0; j < dib_header.width; ++j) {
             RawPixel raw_pixel{};
             raw_pixel.blue = Denormalize<uint8_t>(image[i][j].blue);
@@ -130,4 +137,4 @@ void BMP::Write(const image_processor::Image &image, std::filesystem::path path)
     }
 }
 
-}  // namespace image_processor
+}  // namespace image_processor::formats

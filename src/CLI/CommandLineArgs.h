@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "FilterController/FilterController.h"
+#include "ImageFormats/ImageFormat.h"
 
 namespace image_processor::command_line {
 
@@ -16,7 +17,8 @@ static constexpr char Help[] =
     "\t-crop width height Crops to specified width and height\n"
     "\t-neg Negative\n"
     "\t-edge threshold Edge with specified threshold\n"
-    "\t-blur sigma Gaussian Blur with parameter sigma\n";
+    "\t-blur sigma Gaussian Blur with parameter sigma\n"
+    "\t-distort radius grain Perlin Noise distortion with radius and grain size\n";
 
 class ArgsError : public std::exception {
 public:
@@ -38,5 +40,7 @@ ArgsStream ConstructArgsStream(int argc, char** argv);
 Filenames GetFilenames(ArgsStream& as);
 
 filter_controller::FilterArray GetFilters(ArgsStream& as);
+
+std::unique_ptr<image_processor::formats::ImageFormat> GetFormat(std::filesystem::path path);
 
 }  // namespace image_processor::command_line

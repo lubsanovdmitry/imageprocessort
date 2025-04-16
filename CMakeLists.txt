@@ -1,24 +1,14 @@
-cmake_minimum_required(VERSION 3.14...3.27)
-
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-
-project(cmaketest1 VERSION 0.1.0 
-        DESCRIPTION "cmake test"
-        LANGUAGES CXX
+add_executable(image_processor 
+        src/main.cpp
+        src/ImageFormats/BMP.cpp
+        src/IO/FileReader.cpp
+        src/IO/FileWriter.cpp
+        src/Image/Pixel.cpp
+        src/Filters/Filters.cpp
+        src/FilterController/FilterController.cpp
+        src/CLI/CommandLineArgs.cpp
 )
+target_include_directories(image_processor PRIVATE src)
+target_compile_features(image_processor PRIVATE cxx_std_20)
 
-# set(CMAKE_CXX_STANDARD 20)
-
-include(FetchContent)
-
-FetchContent_Declare(
-    Catch2
-    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG v3.5.3
-)
-FetchContent_MakeAvailable(Catch2)
-
-add_executable(image_processor)
-
-add_subdirectory(src)
-add_subdirectory(tests)
+# add_subdirectory(tests)
